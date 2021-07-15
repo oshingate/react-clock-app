@@ -1,10 +1,114 @@
 import React from 'react';
+import StopWatchClock from './StopwatchClock';
 
 class Stopwatch extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showStopwatch: false,
+      state: 'reset',
+      hr: 0,
+      min: 0,
+      sec: 0,
+      ms: 0,
+    };
   }
+
+  //start Stopwatch
+  startStopwatch = () => {
+    console.log('stopwatch started');
+    this.setState({ showStopwatch: true, state: 'running' });
+  };
+  //resume Stopwatch
+  resumeStopwatch = () => {
+    console.log('stopwatch started');
+    this.setState({ showStopwatch: true, state: 'running' });
+  };
+
+  // reset Stopwatch
+
+  resetStopwatch = () => {
+    console.log('stopwatch Stopped');
+    this.setState({
+      showStopwatch: false,
+      state: 'reset',
+      hr: 0,
+      min: 0,
+      sec: 0,
+      ms: 0,
+    });
+  };
+
+  //stop stopwatch
+
+  stopStopwatch = () => {
+    console.log('stopwatch Stopped');
+    this.setState({ showStopwatch: false, state: 'stopped' });
+  };
+
+  showButtonsInStopwatch = () => {
+    switch (this.state.state) {
+      case 'reset':
+        return (
+          <button
+            onClick={(event) => {
+              this.startStopwatch();
+            }}
+            className='btn btn-sec'
+          >
+            Start
+          </button>
+        );
+
+      case 'running':
+        return (
+          <button
+            onClick={(event) => {
+              this.stopStopwatch();
+            }}
+            className='btn btn-sec'
+          >
+            Stop
+          </button>
+        );
+
+      case 'stopped':
+        return (
+          <>
+            <button
+              onClick={(event) => {
+                this.resumeStopwatch();
+              }}
+              className='btn btn-sec'
+            >
+              Resume
+            </button>
+            <button
+              onClick={(event) => {
+                this.resetStopwatch();
+              }}
+              className='btn btn-sec'
+            >
+              Reset
+            </button>
+          </>
+        );
+
+      default:
+        break;
+    }
+  };
+
+  updateStateStopwatch = (newHr, newMin, newSec, newMs) => {
+    // console.log('updateStateStopwatch');
+    this.setState({
+      hr: newHr,
+      min: newMin,
+      sec: newSec,
+      ms: newMs,
+    });
+  };
+
   render() {
     return (
       <article className='card stopwatch'>
@@ -25,25 +129,24 @@ class Stopwatch extends React.Component {
 
         <h3>Stopwatch</h3>
 
-        <h2>
-          {this.props.stopwatch.hr < 10
-            ? '0' + this.props.stopwatch.hr
-            : this.props.stopwatch.hr}
-          :{' '}
-          {this.props.stopwatch.min < 10
-            ? '0' + this.props.stopwatch.min
-            : this.props.stopwatch.min}{' '}
-          :{' '}
-          {this.props.stopwatch.sec < 10
-            ? '0' + this.props.stopwatch.sec
-            : this.props.stopwatch.sec}
-          :{' '}
-          {this.props.stopwatch.ms < 10
-            ? '0' + this.props.stopwatch.ms
-            : this.props.stopwatch.ms}{' '}
-        </h2>
+        {this.state.showStopwatch ? (
+          <StopWatchClock
+            data={this.state}
+            updateStateStopwatch={this.updateStateStopwatch}
+          />
+        ) : (
+          <h2>
+            {' '}
+            {this.state.hr < 10 ? '0' + this.state.hr : this.state.hr}:{' '}
+            {this.state.min < 10 ? '0' + this.state.min : this.state.min} :{' '}
+            {this.state.sec < 10 ? '0' + this.state.sec : this.state.sec}:{' '}
+            {this.state.ms < 10 ? '0' + this.state.ms : this.state.ms}{' '}
+          </h2>
+        )}
 
-        {this.props.showButtonsInStopwatch()}
+        {/*  */}
+
+        {this.showButtonsInStopwatch()}
       </article>
     );
   }
