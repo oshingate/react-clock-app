@@ -1,11 +1,121 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import TimerClock from './TimerClock';
 
 class Timer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showtimer: false,
+      state: 'reset',
+      hr: 0,
+      min: 0,
+      sec: 0,
+    };
   }
+
+  //start timer
+  startTimer = () => {
+    console.log('Timer Started');
+
+    this.setState({ ...this.state, showtimer: true, state: 'running' });
+  };
+
+  // reset timer
+
+  resetTimer = () => {
+    console.log('timer resetted');
+    this.setState({
+      showStopwatch: false,
+      state: 'reset',
+      hr: 0,
+      min: 0,
+      sec: 0,
+    });
+  };
+
+  //resume timer
+  resumeTimer = () => {
+    console.log('stopwatch started');
+    this.setState({ showtimer: true, state: 'running' });
+  };
+
+  //stop timer
+  stopTimer = () => {
+    console.log('Timer Stopped');
+    this.setState({ showtimer: false, state: 'stopped' });
+  };
+
+  showButtonsInTimer = () => {
+    switch (this.state.state) {
+      case 'reset':
+        return (
+          <button
+            onClick={() => {
+              this.startTimer();
+            }}
+            className='btn btn-sec'
+          >
+            Start
+          </button>
+        );
+
+      case 'running':
+        return (
+          <button onClick={this.stopTimer} className='btn btn-sec'>
+            Stop
+          </button>
+        );
+
+      case 'stopped':
+        return (
+          <>
+            <button onClick={this.resumeTimer} className='btn btn-sec'>
+              Resume
+            </button>
+            <button onClick={this.resetTimer} className='btn btn-sec'>
+              Reset
+            </button>
+          </>
+        );
+
+      default:
+        break;
+    }
+  };
+
+  incTimer = (value) => {
+    this.setState({ [value]: this.state[value] + 1 });
+  };
+
+  decTimer = (value) => {
+    this.setState({ [value]: this.state[value] - 1 });
+  };
+
+  timerCompleted = () => {
+    this.setState((prevState) => {
+      console.log('Time is up');
+      return {
+        hr: 0,
+        min: 0,
+        sec: 0,
+        showtimer: false,
+        state: 'stopped',
+      };
+    });
+  };
+
+  updateStateTimer = (newHr, newMin, newSec) => {
+    this.setState((prevState) => {
+      return {
+        ...prevState,
+        hr: newHr,
+        min: newMin,
+        sec: newSec,
+      };
+    });
+  };
+
   render() {
     return (
       <article className='card timer'>
@@ -28,7 +138,12 @@ class Timer extends React.Component {
         <h5>Hours : Minutes : Seconds</h5>
 
         <span className='flex center timer__svg-div'>
-          <a href='#'>
+          <a
+            href='#'
+            onClick={(event) => {
+              this.incTimer('hr');
+            }}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'
@@ -40,7 +155,12 @@ class Timer extends React.Component {
               <path d='m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z' />
             </svg>
           </a>
-          <a href='#'>
+          <a
+            href='#'
+            onClick={(event) => {
+              this.incTimer('min');
+            }}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'
@@ -52,7 +172,12 @@ class Timer extends React.Component {
               <path d='m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z' />
             </svg>
           </a>
-          <a href='#'>
+          <a
+            href='#'
+            onClick={(event) => {
+              this.incTimer('sec');
+            }}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'
@@ -66,23 +191,28 @@ class Timer extends React.Component {
           </a>
         </span>
 
-        <h2>
-          {' '}
-          {this.props.timer.hr < 10
-            ? '0' + this.props.timer.hr
-            : this.props.timer.hr}
-          :{' '}
-          {this.props.timer.min < 10
-            ? '0' + this.props.timer.min
-            : this.props.timer.min}{' '}
-          :{' '}
-          {this.props.timer.sec < 10
-            ? '0' + this.props.timer.sec
-            : this.props.timer.sec}
-        </h2>
+        {this.state.showtimer ? (
+          <TimerClock
+            data={this.state}
+            timerCompleted={this.timerCompleted}
+            updateStateTimer={this.updateStateTimer}
+          />
+        ) : (
+          <h2>
+            {' '}
+            {this.state.hr < 10 ? '0' + this.state.hr : this.state.hr}:{' '}
+            {this.state.min < 10 ? '0' + this.state.min : this.state.min} :{' '}
+            {this.state.sec < 10 ? '0' + this.state.sec : this.state.sec}
+          </h2>
+        )}
 
         <span className='flex center timer__svg-div'>
-          <a href='#'>
+          <a
+            href='#'
+            onClick={(event) => {
+              this.decTimer('hr');
+            }}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'
@@ -94,7 +224,12 @@ class Timer extends React.Component {
               <path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z' />
             </svg>
           </a>
-          <a href='#'>
+          <a
+            href='#'
+            onClick={(event) => {
+              this.decTimer('min');
+            }}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'
@@ -106,7 +241,12 @@ class Timer extends React.Component {
               <path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z' />
             </svg>
           </a>
-          <a href='#'>
+          <a
+            href='#'
+            onClick={(event) => {
+              this.decTimer('sec');
+            }}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'
@@ -120,7 +260,7 @@ class Timer extends React.Component {
           </a>
         </span>
 
-        {this.props.showButtonsInTimer()}
+        {this.showButtonsInTimer()}
       </article>
     );
   }
